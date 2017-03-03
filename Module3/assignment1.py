@@ -11,21 +11,26 @@ plt.style.use('ggplot')
 # TODO: Load up the Seeds Dataset into a Dataframe
 # It's located at 'Datasets/wheat.data'
 # 
-# .. your code here ..
+file_path = "/Users/szabolcs/dev/git/DAT210x/Module3/Datasets/"
+file_name = "wheat.data"
+
+df = pd.read_csv(file_path + file_name)
+print(df.shape)
+print(df.head(3))
 
 
 #
 # TODO: Create a slice of your dataframe (call it s1)
 # that only includes the 'area' and 'perimeter' features
 # 
-# .. your code here ..
+s1 = df[["area", "perimeter"]]
 
 
 #
 # TODO: Create another slice of your dataframe (call it s2)
 # that only includes the 'groove' and 'asymmetry' features
 # 
-# .. your code here ..
+s2 = df[["groove", "asymmetry"]]
 
 
 #
@@ -33,7 +38,9 @@ plt.style.use('ggplot')
 # and another histogram plot using the second slice.
 # Be sure to set alpha=0.75
 # 
-# .. your code here ..
+plt.figure()
+s1.plot.hist(alpha=0.75)
+s2.plot.hist(alpha=0.75)
 
 
 # Display the graphs:

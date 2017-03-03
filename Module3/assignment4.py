@@ -13,7 +13,12 @@ plt.style.use('ggplot')
 # TODO: Load up the Seeds Dataset into a Dataframe
 # It's located at 'Datasets/wheat.data'
 # 
-# .. your code here ..
+file_path = "/Users/szabolcs/dev/git/DAT210x/Module3/Datasets/"
+file_name = "wheat.data"
+
+df = pd.read_csv(file_path + file_name)
+print(df.shape)
+print(df.head(3))
 
 
 
@@ -22,7 +27,7 @@ plt.style.use('ggplot')
 # (Hint: You shouldn't have)
 # Also get rid of the 'area' and 'perimeter' features
 # 
-# .. your code here ..
+df.drop(["id", "area", "perimeter"], axis=1, inplace=True)
 
 
 
@@ -31,7 +36,7 @@ plt.style.use('ggplot')
 # the 'wheat_type' feature. Be sure to set the optional
 # display parameter alpha to 0.4
 # 
-# .. your code here ..
+parallel_coordinates(df, "wheat_type", alpha=0.4)
 
 
 
