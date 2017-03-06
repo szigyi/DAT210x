@@ -16,9 +16,11 @@ reduce_factor = 100
 # Look pretty...
 matplotlib.style.use('ggplot')
 
+file_path = '/Users/szabolcs/dev/git/DAT210x/Module4/Datasets/'
+file_name = 'stanford_armadillo.ply'
 
 # Load up the scanned armadillo
-plyfile = PlyData.read('Datasets/stanford_armadillo.ply')
+plyfile = PlyData.read(file_path + file_name)
 armadillo = pd.DataFrame({
   'x':plyfile['vertex']['z'][::reduce_factor],
   'y':plyfile['vertex']['x'][::reduce_factor],
@@ -27,44 +29,19 @@ armadillo = pd.DataFrame({
 
 
 def do_PCA(armadillo):
-  #
-  # TODO: Write code to import the libraries required for PCA.
-  # Then, train your PCA on the armadillo dataframe. Finally,
-  # drop one dimension (reduce it down to 2D) and project the
-  # armadillo down to the 2D principal component feature space.
-  #
-  # NOTE: Be sure to RETURN your projected armadillo! 
-  # (This projection is actually stored in a NumPy NDArray and
-  # not a Pandas dataframe, which is something Pandas does for
-  # you automatically. =)
-  #
-  # .. your code here ..
-
-  return None
+    from sklearn.decomposition import PCA
+    pca = PCA(n_components=2, svd_solver="full")
+    pca.fit(armadillo)
+    armadillo_reduced = pca.transform(armadillo)
+    return armadillo_reduced
 
 
 def do_RandomizedPCA(armadillo):
-  #
-  # TODO: Write code to import the libraries required for
-  # RandomizedPCA. Then, train your RandomizedPCA on the armadillo
-  # dataframe. Finally, drop one dimension (reduce it down to 2D)
-  # and project the armadillo down to the 2D principal component
-  # feature space.
-  #
-  # NOTE: Be sure to RETURN your projected armadillo! 
-  # (This projection is actually stored in a NumPy NDArray and
-  # not a Pandas dataframe, which is something Pandas does for
-  # you automatically. =)
-  #
-  # NOTE: SKLearn deprecated the RandomizedPCA method, but still
-  # has instructions on how to use randomized (truncated) method
-  # for the SVD solver. To find out how to use it, check out the
-  # full docs here:
-  # http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
-  #
-  # .. your code here ..
-
-  return None
+    from sklearn.decomposition import PCA
+    pca = PCA(n_components=2, svd_solver="randomized", random_state=123456)
+    pca.fit(armadillo)
+    armadillo_reduced = pca.transform(armadillo)
+    return armadillo_reduced
 
 
 

@@ -9,7 +9,7 @@ plt.style.use('ggplot')
 
 
 # Do * NOT * alter this line, until instructed!
-scaleFeatures = False
+scaleFeatures = True
 
 
 # TODO: Load up the dataset and remove any and all
@@ -19,8 +19,13 @@ scaleFeatures = False
 # QUESTION: Should the id column be included as a
 # feature?
 #
-# .. your code here ..
-
+file_path = '/Users/szabolcs/dev/git/DAT210x/Module4/Datasets/'
+file_name = 'kidney_disease.csv'
+df = pd.read_csv(file_path + file_name)
+print(df.shape)
+df = df.dropna(axis=0)
+df = df.drop(["id"], axis=1)
+print(df.shape)
 
 
 # Create some color coded labels; the actual label feature
@@ -32,8 +37,8 @@ labels = ['red' if i=='ckd' else 'green' for i in df.classification]
 # TODO: Use an indexer to select only the following columns:
 #       ['bgr','wc','rc']
 #
-# .. your code here ..
-
+df = df[["bgr", "wc", "rc"]]
+print(df.shape)
 
 
 # TODO: Print out and check your dataframe's dtypes. You'll might
@@ -47,7 +52,11 @@ labels = ['red' if i=='ckd' else 'green' for i in df.classification]
 # properly detect and convert them to that data type for you, then use
 # an appropriate command to coerce these features into the right type.
 #
-# .. your code here ..
+print(df.head())
+df.bgr = df.bgr.astype(float)
+df.wc = df.wc.astype(float)
+df.rc = df.rc.astype(float)
+print(df.dtypes)
 
 
 
@@ -60,7 +69,7 @@ labels = ['red' if i=='ckd' else 'green' for i in df.classification]
 # Hint: If you don't see all three variables: 'bgr','wc' and 'rc', then
 # you probably didn't complete the previous step properly.
 #
-# .. your code here ..
+print(df.describe())
 
 
 
@@ -71,13 +80,16 @@ labels = ['red' if i=='ckd' else 'green' for i in df.classification]
 # .. your code adjustment here ..
 if scaleFeatures: df = helper.scaleFeatures(df)
 
-
+print(df.describe())
 
 # TODO: Run PCA on your dataset and reduce it to 2 components
 # Ensure your PCA instance is saved in a variable called 'pca',
 # and that the results of your transformation are saved in 'T'.
 #
-# .. your code here ..
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2, svd_solver="full")
+pca.fit(df)
+T = pca.transform(df)
 
 
 # Plot the transformed data as a scatter plot. Recall that transforming
