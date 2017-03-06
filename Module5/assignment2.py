@@ -11,36 +11,35 @@ def showandtell(title=None):
   # exit()
 
 
-
-
 #
 # INFO: This dataset has call records for 10 users tracked over the course of 3 years.
 # Your job is to find out where the users likely live and work at!
-
 
 #
 # TODO: Load up the dataset and take a peek at its head
 # Convert the date using pd.to_datetime, and the time using pd.to_timedelta
 #
-# .. your code here ..
+file_path = "/Users/szabolcs/dev/git/DAT210x/Module5/Datasets/"
+file_name = "CDR.csv"
 
+df = pd.read_csv(file_path + file_name)
+print(df.head())
 
 #
 # TODO: Get a distinct list of "In" phone numbers (users) and store the values in a
 # regular python list.
 # Hint: https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.tolist.html
 #
-# .. your code here ..
-
+incoming_unqiue = df.In.unique().tolist()
 
 # 
 # TODO: Create a slice called user1 that filters to only include dataset records where the
 # "In" feature (user phone number) is equal to the first number on your unique list above;
 # that is, the very first number in the dataset
 #
-# .. your code here ..
+user1 = df[df["In"] == incoming_unqiue[0]]
 
-
+print(user1[["TowerLat", "TowerLon"]])
 # INFO: Plot all the call locations
 user1.plot.scatter(x='TowerLon', y='TowerLat', c='gray', alpha=0.1, title='Call Locations')
 showandtell()  # Comment this line out when you're ready to proceed

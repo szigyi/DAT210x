@@ -20,7 +20,7 @@ def Plot2D(T, title, x, y, num_to_plot=40):
     img_num = int(random.random() * num_images)
     x0, y0 = T[img_num,x]-x_size/2., T[img_num,y]-y_size/2.
     x1, y1 = T[img_num,x]+x_size/2., T[img_num,y]+y_size/2.
-    img = df.iloc[img_num,:].reshape(num_pixels, num_pixels)
+    img = df.iloc[img_num,:].values.reshape(num_pixels, num_pixels)
     ax.imshow(img, aspect='auto', cmap=plt.cm.gray, interpolation='nearest', zorder=100000, extent=(x0, x1, y0, y1))
 
   # It also plots the full scatter:
@@ -31,16 +31,16 @@ def Plot2D(T, title, x, y, num_to_plot=40):
 # A .MAT file is a .MATLAB file. The faces dataset could have came
 # in through .png images, but we'll show you how to do that in
 # anither lab. For now, you'll see how to import .mats:
-mat = scipy.io.loadmat('Datasets/face_data.mat')
+mat = scipy.io.loadmat('/Users/szabolcs/dev/git/DAT210x/Module4/Datasets/face_data.mat')
 df = pd.DataFrame(mat['images']).T
 num_images, num_pixels = df.shape
 num_pixels = int(math.sqrt(num_pixels))
 
 # Rotate the pictures, so we don't have to crane our necks:
 for i in range(num_images):
-  df.loc[i,:] = df.loc[i,:].reshape(num_pixels, num_pixels).T.reshape(-1)
+  df.loc[i,:] = df.loc[i,:].values.reshape(num_pixels, num_pixels).T.reshape(-1)
 
-
+print(df.shape)
 #
 # TODO: Implement PCA here. Reduce the dataframe df down
 # to THREE components. Once you've done that, call Plot2D.
@@ -51,22 +51,43 @@ for i in range(num_images):
 # x is the principal component you want displayed on the x-axis, Can be 0 or 1
 # y is the principal component you want displayed on the y-axis, Can be 1 or 2
 #
-# .. your code here ..
+from sklearn.decomposition import PCA
+pca = PCA(n_components=3)
+pca.fit(df)
+df_pca = pca.transform(df)
 
+Plot2D(df_pca, "PCA", 1, 2)
 
 #
 # TODO: Implement Isomap here. Reduce the dataframe df down
 # to THREE components. Once you've done that, call Plot2D using
 # the first two components.
 #
-# .. your code here ..
+from sklearn.manifold import Isomap
+imap = Isomap(n_components=3, n_neighbors=8)
+imap.fit(df)
+df_imap = imap.transform(df)
 
+Plot2D(df_imap, "Isomap", 1, 2)
 
 #
 # TODO: If you're up for a challenge, draw your dataframes in 3D
 # Even if you're not, just do it anyway.
 #
-# .. your code here ..
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+ax.set_title("PCA 3D")
+ax.set_xlabel("Comp1")
+ax.set_ylabel("Comp2")
+ax.set_zlabel("Comp3")
+ax.scatter(df_pca[:, 0], df_pca[:, 1], df_pca[:, 2], c="r", marker=".")
 
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+ax.set_title("Isomap 3D")
+ax.set_xlabel("Comp1")
+ax.set_ylabel("Comp2")
+ax.set_zlabel("Comp3")
+ax.scatter(df_imap[:, 0], df_imap[:, 1], df_imap[:, 2], c="r", marker=".")
 
 plt.show()
