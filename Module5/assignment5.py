@@ -51,30 +51,52 @@ def plotDecisionBoundary(model, X, y):
 # compare it to the file you loaded in a text editor. Make sure you're
 # loading your data properly--don't fail on the 1st step!
 #
-# .. your code here ..
+file_path = "/Users/szabolcs/dev/git/DAT210x/Module3/Datasets/"
+file_name = "wheat.data"
 
-
+X = pd.read_csv(file_path + file_name)
+X = X.drop(["id"], axis=1)
+print(X.head())
+print("X", X.shape)
 
 #
 # TODO: Copy the 'wheat_type' series slice out of X, and into a series
 # called 'y'. Then drop the original 'wheat_type' column from the X
 #
-# .. your code here ..
-
+y = X["wheat_type"].copy()
+X.drop(["wheat_type"], axis=1, inplace=True)
+print(X.dtypes)
+print("X", X.shape)
+print("y", y.shape)
 
 
 # TODO: Do a quick, "ordinal" conversion of 'y'. In actuality our
 # classification isn't ordinal, but just as an experiment...
 #
-# .. your code here ..
-
+wheat_types = y.unique()
+print(wheat_types)
+#y = pd.get_dummies(y, columns=["wheat_types"])
+#y = y.astype("category")
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+le.fit(y)
+y = pd.Series(le.transform(y))
+print(y.dtypes)
 
 
 #
 # TODO: Basic nan munging. Fill each row's nans with the mean of the feature
 #
-# .. your code here ..
-
+print("Count NaNs:")
+print(X.isnull().sum())
+print("Filling NaNs with means")
+compactness_mean = X.compactness.mean()
+width_mean = X.width.mean()
+groove_mean = X.groove.mean()
+X.compactness.fillna(compactness_mean, inplace=True)
+X.width.fillna(width_mean, inplace=True)
+X.groove.fillna(groove_mean, inplace=True)
+print(X.isnull().sum())
 
 
 #
@@ -83,8 +105,12 @@ def plotDecisionBoundary(model, X, y):
 # so that your answers are verifiable. In the real world, you wouldn't
 # specify a random_state.
 #
-# .. your code here ..
-
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=1)
+print("X_train", X_train.head(2))
+print("X_test", X_test.head(2))
+print("y_train", y_train.head(2))
+print("y_test", y_test.head(2))
 
 
 # 
@@ -97,8 +123,9 @@ def plotDecisionBoundary(model, X, y):
 # you'll only have your training data, and then unlabeled data you want to
 # apply your models to.
 #
-# .. your code here ..
-
+from sklearn.preprocessing import Normalizer
+norm = Normalizer(norm="l1")
+norm.fit(X_train)
 
 
 #
@@ -109,9 +136,8 @@ def plotDecisionBoundary(model, X, y):
 # that has ben fit against your training data, so that it exist in the same
 # feature-space as the original data used to train your models.
 #
-# .. your code here ..
-
-
+X_train = norm.transform(X_train)
+X_test = norm.transform(X_test)
 
 
 #
@@ -123,10 +149,11 @@ def plotDecisionBoundary(model, X, y):
 # NOTE: This has to be done because the only way to visualize the decision
 # boundary in 2D would be if your KNN algo ran in 2D as well:
 #
-# .. your code here ..
-
-
-
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+pca.fit(X_train)
+X_train = pca.transform(X_train)
+X_test = pca.transform(X_test)
 
 #
 # TODO: Create and train a KNeighborsClassifier. Start with K=9 neighbors.
@@ -134,9 +161,9 @@ def plotDecisionBoundary(model, X, y):
 # transformed training data above! You do not, of course, need to transform
 # your labels.
 #
-# .. your code here ..
-
-
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors=1)
+knn.fit(X_train, y_train)
 
 
 # HINT: Ensure your KNeighbors classifier object from earlier is called 'knn'
@@ -151,8 +178,8 @@ plotDecisionBoundary(knn, X_train, y_train)
 # NOTE: You do NOT have to run .predict before calling .score, since
 # .score will take care of running your predictions for you automatically.
 #
-# .. your code here ..
-
+sc = knn.score(X_test, y_test)
+print("Score:", sc)
 
 
 #
