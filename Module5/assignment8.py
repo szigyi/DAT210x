@@ -15,9 +15,9 @@ def drawLine(model, X_test, y_test, title):
   ax.scatter(X_test, y_test, c='g', marker='o')
   ax.plot(X_test, model.predict(X_test), color='orange', linewidth=1, alpha=0.7)
 
-  print "Est 2014 " + title + " Life Expectancy: ", model.predict([[2014]])[0]
-  print "Est 2030 " + title + " Life Expectancy: ", model.predict([[2030]])[0]
-  print "Est 2045 " + title + " Life Expectancy: ", model.predict([[2045]])[0]
+  print("Est 2014 " + title + " Life Expectancy: ", model.predict([[2014]])[0])
+  print("Est 2030 " + title + " Life Expectancy: ", model.predict([[2030]])[0])
+  print("Est 2045 " + title + " Life Expectancy: ", model.predict([[2045]])[0])
 
   score = model.score(X_test, y_test)
   title += " R2: " + str(score)
@@ -33,16 +33,21 @@ def drawLine(model, X_test, y_test, title):
 # compare it to the dataset loaded in a text file or in a
 # spread sheet application
 #
-# .. your code here ..
+file_path = "/Users/szabolcs/dev/git/DAT210x/Module5/Datasets/"
+file_name = "life_expectancy.csv"
 
+X = pd.read_csv(file_path + file_name, sep='\t')
+print(X.head())
+print(X.describe())
+print(X.dtypes)
 
 #
 # TODO: Create your linear regression model here and store it in a
 # variable called 'model'. Don't actually train or do anything else
 # with it yet:
 #
-# .. your code here ..
-
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
 
 
 #
@@ -53,7 +58,6 @@ def drawLine(model, X_test, y_test, title):
 # INFO You might also want to read the note about slicing on the bottom
 # of this document before proceeding.
 #
-# .. your code here ..
 
 
 
