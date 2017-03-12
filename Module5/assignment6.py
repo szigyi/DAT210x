@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 # as the dimensionality reduction technique:
 Test_PCA = False
 
-matplotlib.style.use('ggplot') # Look Pretty
+plt.style.use('ggplot') # Look Pretty
 
 
-def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
+def Plot2DBoundary(X, model, DTrain, LTrain, DTest, LTest):
   # The dots are training samples (img not drawn), and the pics are testing samples (images drawn)
   # Play around with the K values. This is very controlled dataset so it should be able to get perfect classification on testing entries
   # Play with the K for isomap, play with the K for neighbors. 
@@ -76,7 +76,7 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
     # DTest = our images isomap-transformed into 2D. But we still want
     # to plot the original image, so we look to the original, untouched
     # dataset (at index) to get the pixels:
-    img = df.iloc[index,:].reshape(num_pixels, num_pixels)
+    img = X.iloc[index,:].values.reshape(num_pixels, num_pixels)
     ax.imshow(img, aspect='auto', cmap=plt.cm.gray, interpolation='nearest', zorder=100000, extent=(x0, x1, y0, y1), alpha=0.8)
     img_num += 1
 
@@ -97,7 +97,17 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
 # num_pixels value, and to rotate the images to being right-side-up
 # instead of sideways. This was demonstrated in the M4/A4 code:
 #
-# .. your code here ..
+mat = scipy.io.loadmat('/Users/szabolcs/dev/git/DAT210x/Module4/Datasets/face_data.mat')
+X = pd.DataFrame(mat['images']).T
+num_images, num_pixels = X.shape
+num_pixels = int(math.sqrt(num_pixels))
+
+# Rotate the pictures, so we don't have to crane our necks:
+for i in range(num_images):
+  X.loc[i,:] = X.loc[i,:].values.reshape(num_pixels, num_pixels).T.reshape(-1)
+
+print(X.head())
+print(X.shape)
 
 
 #
@@ -108,8 +118,9 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
 # out the labels and compare to the face_labels.csv file to ensure you
 # loaded it correctly.
 #
-# .. your code here ..
-
+y = pd.read_csv('/Users/szabolcs/dev/git/DAT210x/Module5/Datasets/face_labels.csv')
+y = y.label
+print(y.shape)
 
 #
 # TODO: Do train_test_split. Use the same code as on the EdX platform in the
@@ -120,8 +131,8 @@ def Plot2DBoundary(DTrain, LTrain, DTest, LTest):
 # dataframe, which you will use to plot your testing data as images rather
 # than as points:
 #
-# .. your code here ..
-
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=7, test_size=0.15)
 
 
 if Test_PCA:
@@ -143,7 +154,13 @@ if Test_PCA:
   # transform both your training + test data, storing the results back into
   # data_train, and data_test.
   #
-  # .. your code here ..
+  print("PCA")
+  from sklearn.decomposition import PCA
+  pca = PCA(n_components=2)
+  pca.fit(X_train)
+  
+  X_train = pca.transform(X_train)
+  X_test = pca.transform(X_test)
 
 else:
   # INFO: Isomap is used *before* KNeighbors to simplify your high dimensionality
@@ -165,9 +182,13 @@ else:
   # transform both your training + test data, storing the results back into
   # data_train, and data_test.
   #
-  # .. your code here ..
-
-
+  print("Isomap")
+  from sklearn.manifold import Isomap
+  isomap = Isomap(n_neighbors=5, n_components=2)
+  isomap.fit(X_train)
+  
+  X_train = isomap.transform(X_train)
+  X_test = isomap.transform(X_test)
 
 
 #
@@ -177,21 +198,27 @@ else:
 # represent your images, along with a list of "answers" or correct class
 # labels that those 2d representations should be.
 #
-# .. your code here ..
-
-
+scores = []
+for k in range(1, 21):
+    print("Running with k:", k)
+    from sklearn.neighbors import KNeighborsClassifier
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_train, y_train)
 
 #
 # TODO: Calculate + Print the accuracy of the testing set (data_test and
 # label_test).
 #
-# .. your code here ..
+    score = knn.score(X_test, y_test)
+    print("Score:", score)
+    scores.append(score)
 
-
-
+pd.DataFrame({ 'score': scores, 'k': range(1, 21)}).plot(x="k", y="score")
+plt.show()
 # Chart the combined decision boundary, the training data as 2D plots, and
 # the testing data as small images so we can visually validate performance.
-Plot2DBoundary(data_train, label_train, data_test, label_test)
+
+#Plot2DBoundary(X, knn, X_train, y_train, X_test, y_test)
 
 
 #
