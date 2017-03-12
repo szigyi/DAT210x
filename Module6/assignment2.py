@@ -31,14 +31,14 @@ def load(path_test, path_train):
 
 def peekData(X_train):
   # The 'targets' or labels are stored in y. The 'samples' or data is stored in X
-  print "Peeking your data..."
+  print("Peeking your data...")
   fig = plt.figure()
 
   cnt = 0
   for col in range(5):
     for row in range(10):
       plt.subplot(5, 10, cnt + 1)
-      plt.imshow(X_train.ix[cnt,:].reshape(8,8), cmap=plt.cm.gray_r, interpolation='nearest')
+      plt.imshow(X_train.ix[cnt,:].values.reshape(8,8), cmap=plt.cm.gray_r, interpolation='nearest')
       plt.axis('off')
       cnt += 1
   fig.set_tight_layout(True)
@@ -66,7 +66,7 @@ def drawPredictions(X_train, X_test, y_train, y_test):
       plt.subplot(num_cols, num_rows, index + 1)
 
       # 8x8 is the size of the image, 64 pixels
-      plt.imshow(X_test.ix[index,:].reshape(8,8), cmap=plt.cm.gray_r, interpolation='nearest')
+      plt.imshow(X_test.ix[index,:].values.reshape(8,8), cmap=plt.cm.gray_r, interpolation='nearest')
 
       # Green = Guessed right
       # Red = Fail!
@@ -81,7 +81,8 @@ def drawPredictions(X_train, X_test, y_train, y_test):
 
 #
 # TODO: Pass in the file paths to the .tes and the .tra files
-X_train, X_test, y_train, y_test = load('', '')
+path = "/Users/szabolcs/dev/git/DAT210x/Module6/Datasets/"
+X_train, X_test, y_train, y_test = load(path + 'optdigits.tes', path + 'optdigits.tra')
 
 import matplotlib.pyplot as plt
 from sklearn import svm
@@ -97,18 +98,19 @@ peekData(X_train)
 # TODO: Create an SVC classifier. Leave C=1, but set gamma to 0.001
 # and set the kernel to linear. Then train the model on the training
 # data / labels:
-print "Training SVC Classifier..."
+print("Training SVC Classifier...")
 #
-# .. your code here ..
-
+from sklearn.svm import SVC
+model = SVC(C=1, gamma=0.001, kernel='rbf')
+model.fit(X_train, y_train)
 
 
 
 # TODO: Calculate the score of your SVC against the testing data
-print "Scoring SVC Classifier..."
+print("Scoring SVC Classifier...")
 #
-# .. your code here ..
-print "Score:\n", score
+score = model.score(X_test, y_test)
+print("Score:\n", score)
 
 
 # Visual Confirmation of accuracy
@@ -119,8 +121,8 @@ drawPredictions(X_train, X_test, y_train, y_test)
 # TODO: Print out the TRUE value of the 1000th digit in the test set
 # By TRUE value, we mean, the actual provided label for that sample
 #
-# .. your code here ..
-print "1000th test label: ", true_1000th_test_value)
+true_1000th_test_value = y_test[1000]
+print("1000th test label: ", true_1000th_test_value)
 
 
 #
@@ -129,15 +131,18 @@ print "1000th test label: ", true_1000th_test_value)
 # INFO: If you get a warning on your predict line, look at the
 # notes from the previous module's labs.
 #
-# .. your code here ..
-print "1000th test prediction: ", guess_1000th_test_value
+guess_1000th_test_value = model.predict(X_test)[1000]
+print("1000th test prediction: ", guess_1000th_test_value)
 
 
 #
 # TODO: Use IMSHOW to display the 1000th test image, so you can
 # visually check if it was a hard image, or an easy image
 #
-# .. your code here ..
+#plt.clf()
+fig = plt.figure()
+plt.imshow(X_test.ix[1000,:].values.reshape(8,8), cmap=plt.cm.gray_r, interpolation='nearest')
+plt.show()
 
 
 #
